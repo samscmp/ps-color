@@ -1,6 +1,6 @@
 # Default configuration
 
-$Global:PoshColorizerConfig = @{
+$Global:PSConfig = @{
 	File = @{
 		Default = @{
 			Color = "White";
