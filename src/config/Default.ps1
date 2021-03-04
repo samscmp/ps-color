@@ -1,6 +1,6 @@
 # Default configuration
 
-$Global:PSConfig = @{
+$Global:PSColor = @{
 	File = @{
 		Default = @{
 			Color = "White";
