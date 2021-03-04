@@ -1,40 +1,56 @@
 <#
-.SYNOPSIS
-    Generates a manifest for the module
-    and bundles all of the module source files
-    and manifest into a distributable ZIP file.
+	.SYNOPSIS
+	Generates a manifest for the module
+	and bundles all of the module source files
+	and manifest into a distributable ZIP file.
 #>
 
-$ErrorActionPreference = "Stop"
+param (
+	[Switch] $GenerateZip
+)
 
-$scriptPath = Split-Path -LiteralPath $(if ($PSVersionTable.PSVersion.Major -ge 3) { $PSCommandPath } else { & { $MyInvocation.ScriptName } })
+$ErrorActionPreference = 'Stop';
 
-$src = (Join-Path (Split-Path $scriptPath) 'src')
-$dist = (Join-Path (Split-Path $scriptPath) 'release')
-if (Test-Path $dist) {
-    Remove-Item $dist -Force -Recurse
+$releaseFolderName = 'release\PSColor';
+$sourceFolderName = 'src';
+
+$scriptPath = Split-Path -LiteralPath $(
+	if ($PSVersionTable.PSVersion.Major -ge 3) {
+		$PSCommandPath
+	} else {
+		& { $MyInvocation.ScriptName }
+	}
+);
+
+$sourcePath = (Join-Path (Split-Path $scriptPath) $sourceFolderName);
+$releasePath = (Join-Path (Split-Path $scriptPath) $releaseFolderName);
+
+if (Test-Path -Path $releasePath) {
+    Remove-Item -Path $releasePath -Force -Recurse;
 }
-New-Item $dist -ItemType Directory | Out-Null
 
-Write-Host "Creating release archive..."
+New-Item -ItemType Directory -Path $releasePath | Out-Null;
+
+Write-Host 'Creating release archive...';
 
 # Copy the distributable files to the dist folder.
-Copy-Item -Path "$src\*" `
-          -Destination $dist `
-          -Recurse
+Copy-Item -Path "$sourcePath\*" -Destination $releasePath -Recurse;
 
-# Requires .NET 4.5
-[Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
+if ($GenerateZip) {
+	# Requires .NET 4.5
+	[Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') | Out-Null;
 
-$zipFileName = Join-Path ([System.IO.Path]::GetDirectoryName($dist)) "PSColor.zip"
+	$zipFileName = Join-Path -Path ([System.IO.Path]::GetDirectoryName($releasePath)) -ChildPath 'PSColor.zip';
 
-# Overwrite the ZIP if it already already exists.
-if (Test-Path $zipFileName) {
-    Remove-Item $zipFileName -Force
+	# Overwrite the ZIP if it already already exists.
+	if (Test-Path -Path $zipFileName) {
+		Remove-Item -Path $zipFileName -Force;
+	}
+
+	$compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal;
+	$includeBaseDirectory = $false;
+
+	[System.IO.Compression.ZipFile]::CreateFromDirectory($releasePath, $zipFileName, $compressionLevel, $includeBaseDirectory);
+
+	Move-Item -Path $zipFileName -Destination $releasePath -Force;
 }
-
-$compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
-$includeBaseDirectory = $false
-[System.IO.Compression.ZipFile]::CreateFromDirectory($dist, $zipFileName, $compressionLevel, $includeBaseDirectory)
-
-Move-Item $zipFileName $dist -Force
