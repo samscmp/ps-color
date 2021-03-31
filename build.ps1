@@ -22,8 +22,8 @@ $scriptPath = Split-Path -LiteralPath $(
 	}
 );
 
-$sourcePath = (Join-Path (Split-Path $scriptPath) $sourceFolderName);
-$releasePath = (Join-Path (Split-Path $scriptPath) $releaseFolderName);
+$sourcePath = (Join-Path $scriptPath $sourceFolderName);
+$releasePath = (Join-Path $scriptPath $releaseFolderName);
 
 if (Test-Path -Path $releasePath) {
     Remove-Item -Path $releasePath -Force -Recurse;
