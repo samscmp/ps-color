@@ -1,13 +1,28 @@
 # Default configuration
 
-$Global:PSColor = @{
+$Global:ColorSettings = @{
+	General = @{
+		ShortenUserFolder = $true;
+	}
 	File = @{
-		Default = @{
-			Color = "White";
+		DefaultColor = "Gray";
+		Header = @{
+			Visible = $true;
+			TextColor = "DarkGray";
+			SeparatorsColor = "DarkGray";
 		}
-		Type = @{
+		Path = @{
+			Visible = $false;
+			TitleColor = "DarkGray";
+			TextColor = "Gray";
+		}
+		Types = @{
 			Directory = @{
 				Color = "Yellow";
+			}
+			SymbolicLink = @{
+				Color = "Blue";
+				ShowTarget = $true;
 			}
 			Hidden = @{
 				Color = "DarkGray";
@@ -32,8 +47,11 @@ $Global:PSColor = @{
 		}
 	}
 	Service = @{
-		Default = @{
-			Color = "White";
+		DefaultColor = "Gray";
+		Header = @{
+			Visible = $true;
+			TextColor = "DarkGray";
+			SeparatorsColor = "DarkGray";
 		}
 		Status = @{
 			Running = @{
@@ -46,31 +64,27 @@ $Global:PSColor = @{
 	}
 	MatchInfo = @{
 		Match = @{
-			Default = @{
-				Color = "White";
-			}
+			DefaultColor = "Gray";
 			Path = @{
-				Color = "Cyan";
+				Color = "DarkGreen";
 			}
 			LineNumber = @{
-				Color = "Yellow";
+				Color = "DarkGreen";
 			}
 			Line = @{
-				Color = "White";
+				Color = "Gray";
 			}
 		}
 		NoMatch = @{
-			Default = @{
-				Color = "White";
-			}
+			DefaultColor = "Gray";
 			Path = @{
 				Color = "Cyan";
 			}
 			LineNumber = @{
-				Color = "Yellow";
+				Color = "DarkGray";
 			}
 			Line = @{
-				Color = "White";
+				Color = "Gray";
 			}
 		}
 	}

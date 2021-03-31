@@ -6,7 +6,7 @@ function Write-ColorizedServiceLine {
 		[Parameter(Mandatory = $true, Position = 2)] $service
 	)
 
-	$defaultColor = $Global:PSColor.Service.Default.Color;	
+	$defaultColor = $Global:ColorSettings.Service.DefaultColor;	
 
 	Write-Host ("{0,-8}" -f $_.Status) -ForegroundColor $color -NoNewline;
 	Write-Host (
@@ -18,12 +18,17 @@ function Write-ColorizedServiceLine {
 
 function Write-ServiceHeader {
 
-	if ($Script:showHeader -eq $false) {
+	if (($Global:ColorSettings.Service.Header.Visible -eq $false) -or ($Script:showHeader -eq $false)) {
 		return;
 	}
 
-	Write-Host "Status   Name               DisplayName";
-	Write-Host "------   ----               -----------";
+	Write-Host;
+
+	$textColor = $Global:ColorSettings.Service.Header.TextColor;
+	$separatorsColor = $Global:ColorSettings.Service.Header.SeparatorsColor;
+
+	Write-Host "Status   Name                         DisplayName" -ForegroundColor $textColor;
+	Write-Host "------   ----                         -----------" -ForegroundColor $separatorsColor;
 
 	$Script:showHeader = $false;
 }
@@ -33,11 +38,13 @@ function Write-Service {
 		[Parameter(Mandatory = $true, Position = 1)] $service
 	)
 
+	Write-ServiceHeader;
+
 	if ($service.Status -eq 'Stopped') {
-		Write-ColorizedServiceLine $Global:PSColor.Service.Status.Stopped.Color $service;
+		Write-ColorizedServiceLine $Global:ColorSettings.Service.Status.Stopped.Color $service;
 	} elseif ($service.Status -eq 'Running') {
-		Write-ColorizedServiceLine $Global:PSColor.Service.Status.Running.Color $service;
+		Write-ColorizedServiceLine $Global:ColorSettings.Service.Status.Running.Color $service;
 	} else {
-		Write-ColorizedServiceLine $Global:PSColor.Service.Default.Color $service;
+		Write-ColorizedServiceLine $Global:ColorSettings.Service.DefaultColor $service;
 	}
 }
