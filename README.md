@@ -47,24 +47,23 @@ You can configure Color by overriding the values of colors, patterns etc. Config
 $global:ColorSettings = @{
     File = @{
         DefaultColor = "Gray";
-		Types 		 = @{
-			Code = @{
-				Color 	= "Magenta";
-				Pattern = "\.(java|c|cpp|cs|js|css|html)$";
-        	}
-		}
-        
+	Types = @{
+            Code = @{
+	        Color   = "Magenta";
+	        Pattern = "\.(java|c|cpp|cs|js|css|html)$";
+            }
+	}
     }
     Service = @{
         DefaultColor = "White";
-		Status = @{
-			Running	= @{
-				Color = "DarkGreen";
-			}
-			Stopped	= @{
-				Color = "DarkRed";
-			}
-		}
+        Status = @{
+            Running = @{
+                Color = "DarkGreen";
+            }
+            Stopped = @{
+                Color = "DarkRed";
+            }
+        }
     }
     Match = @{
         DefaultColor = "Gray";
