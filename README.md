@@ -25,7 +25,7 @@ After taking a look at the original project's issues, it looks abandoned, having
 
 ## Installation
 
-Color is available on [PowerShell Gallery](https://www.powershellgallery.com/packages/Color) and can be installed through PowerShellGet. To do so, run the following Cmdlet on PowerShell:
+Color is available on [PowerShell Gallery](https://www.powershellgallery.com/packages/Color) and can be installed through PowerShellGet. PowerShell 6 or later is required. To do so, run the following Cmdlet on PowerShell:
 
 ```powershell
 Install-Module -Name Color -AllowClobber
