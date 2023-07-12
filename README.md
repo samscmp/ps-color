@@ -1,43 +1,28 @@
 Color
 =======
 
-A fork of Davlind's PSColor Module, providing color highlighting for PowerShell Cmdlets in a native and interoperable way.
+A fork of brunovieira97 ps-color that was fored from Davlind's PSColor Module, providing color highlighting for PowerShell Cmdlets in a native and interoperable way.
 
 Color highlighting is achieved by overriding Out-Default, and intercepting specific output types. Currently supported outputs:
 
 * FileInfo & DirectoryInfo objects (Get-ChildItem and its aliases)
 * ServiceController objects (Get-Service)
 * MatchInfo objects (Select-String)
+* Some Error coloring
 
 If you'd like a new type of data supported, please feel free to create an Issue or contribute with a PR!
 
 ## Disclaimer
 
-While this is a fork, publishing to PowerShell Gallery requires a new, unique name for this module. Based on this, I renamed it to "Color".
-
-This work is still heavily based on Davlind's original PSColor, and the LICENSE contains his name explicitly.
+This work is still heavily based on brunovieira97 and Davlind's original PSColor, and the LICENSE contains his name explicitly.
 
 ## Why fork PSColor?
 
-I've been using PSColor for a long time now, and with that, feature requests arrive, as well as need for customizability.
-
-After taking a look at the original project's issues, it looks abandoned, having no modifications for years now. What better way for having my own requests implemented (and why not other users' as well?)? A fork it is, then!
+Mainly I wanted to add a lot more file types, I then refactered some of the file printing code so it is easer to maintain the config file. and one bug fix. hopefully i will get some of this merged back with brunovieira97's fork.
 
 ## Installation
 
-Color is available on [PowerShell Gallery](https://www.powershellgallery.com/packages/Color) and can be installed through PowerShellGet. PowerShell 6 or later is required. To do so, run the following Cmdlet on PowerShell:
-
-```powershell
-Install-Module -Name Color -AllowClobber
-```
-
-If you want Color to be ran automatically, add it to your PowerShell Profile:
-
-```powershell
-Import-Module <path to local git repo>/Color/Color.psm1
-```
-
-I'm not dealing with GitHub releases yet, but that's planned for the future. In the meantime, if you wish to do a manual install and avoid usage of PS Gallery and PSGet, just clone the repo and run the [build script](tools/build.ps1) and import the module on your Profile. Also, you can place it in one of your Module Paths (`$env:PSModulePath` has the directory list).
+This would have to be done manually right now.
 
 ## Configuration
 
