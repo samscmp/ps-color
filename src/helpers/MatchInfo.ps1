@@ -39,7 +39,21 @@ function Write-Match {
 	);
 
     Write-HostColor -Value ':' -ForegroundColor $Global:ColorSettings.MatchInfo.Match.DefaultColor -NoNewLine;
-    Write-HostColor -Value $match.Line -ForegroundColor $Global:ColorSettings.MatchInfo.Match.Line.Color;
+
+	#New-Object $_.Pattern, ([System.Text.RegularExpressions.RegexOptions]::$_.IgnoreCase);
+
+	foreach ($item in [regex]::split($match.Line, "({0})" -f $_.Pattern, [Text.RegularExpressions.RegexOptions]'IgnoreCase')) {
+		if($item){
+			if ([regex]::IsMatch($item, $_.Pattern, [Text.RegularExpressions.RegexOptions]@('IgnorePatternWhitespace', 'IgnoreCase, IgnorePatternWhitespace')[$_.IgnoreCase])){
+				Write-HostColor -Value $item -ForegroundColor $Global:ColorSettings.MatchInfo.Match.Line.Color -NoNewLine;
+			}else{
+				Write-HostColor -Value $item -ForegroundColor $Global:ColorSettings.MatchInfo.NoMatch.Line.Color -NoNewLine;
+			}
+		}
+	}
+	Write-Host
+
+	
 }
 
 function Write-MatchInfo {
