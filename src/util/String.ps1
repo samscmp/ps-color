@@ -12,3 +12,19 @@ function Get-StringCharacters {
 	
 	return $string;
 }
+
+function Get-SeparatorsForTitles {
+	param (
+		[Parameter(Mandatory = $true, Position = 1)] [String] $string
+	)
+	$result = $string -replace '\S', '-';
+	return $result;
+}
+
+function Get-Spaces {
+	param (
+		[Parameter(Mandatory = $true, Position = 1)] [Int32] $quantity
+	)
+	$result = " " * $quantity;
+	return $result;
+}
