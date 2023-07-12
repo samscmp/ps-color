@@ -8,22 +8,22 @@ function Get-FileLength {
 	if ($file -isnot [System.IO.DirectoryInfo]) {
 		$length = $file.length;
 	}
-
+	$f = "n1" #'F'
 	if ($null -eq $length) {
 		return "";
 	} elseif ($length -ge 1PB) {
-		return ($length / 1PB).ToString("F") + 'PB';
+		return ($length / 1PB).ToString($f) + ' PB';
 	} elseif ($length -ge 1TB) {
-		return ($length / 1TB).ToString("F") + 'TB';
+		return ($length / 1TB).ToString($f) + ' TB';
 	} elseif ($length -ge 1GB) {
-		return ($length / 1GB).ToString("F") + 'GB';
+		return ($length / 1GB).ToString($f) + ' GB';
 	} elseif ($length -ge 1MB) {
-		return ($length / 1MB).ToString("F") + 'MB';
+		return ($length / 1MB).ToString($f) + ' MB';
 	} elseif ($length -ge 1KB) {
-		return ($length / 1KB).ToString("F") + 'KB';
+		return ($length / 1KB).ToString($f) + ' KB';
 	}
 
-	return $length.ToString() + 'B ';
+	return $length.ToString() + ' B ';
 }
 
 function Get-FileName {
@@ -92,8 +92,15 @@ function Write-FileHeader {
 		$headerTextColor = $Global:ColorSettings.File.Header.TextColor;
 		$headerSeparatorsColor = $Global:ColorSettings.File.Header.SeparatorsColor;
 
-		Write-HostColor -Value "Mode            LastWriteTime     Length Name" -ForegroundColor $headerTextColor;
-		Write-HostColor -Value "----            -------------     ------ ----" -ForegroundColor $headerSeparatorsColor;
+		$modeTitle = 'Mode';
+		if ($Script:platform -eq 'Unix') {
+			$modeTitle = 'UnixMode';
+		}
+		$strings = $modeTitle, (Get-Spaces 12), 'LastWriteTime', (Get-Spaces 5), 'Length', (Get-Spaces 1), 'Name';
+		$titleRow = -join $strings
+		$separatorRow = Get-SeparatorsForTitles $titleRow;
+		Write-HostColor -Value $titleRow -ForegroundColor $headerTextColor
+		Write-HostColor -Value $separatorRow -ForegroundColor $headerSeparatorsColor
 	}	
 
 	$Script:showHeader = $false;
@@ -101,16 +108,11 @@ function Write-FileHeader {
 
 function Write-File {
 	param (
-		[Parameter(Mandatory = $true, Position = 1)] [System.IO.FileSystemInfo] $file
+		[Parameter(Mandatory = $true, Position = 1)] [hashtable] $regex_opj,
+		[Parameter(Mandatory = $true, Position = 2)] [System.IO.FileSystemInfo] $file
 	)
 
-	$regexOptions = ([System.Text.RegularExpressions.RegexOptions]::IgnoreCase);
 
-	$binary = New-Object System.Text.RegularExpressions.Regex($Global:ColorSettings.File.Types.Binary.RegEx, $regexOptions);
-	$code = New-Object System.Text.RegularExpressions.Regex($Global:ColorSettings.File.Types.Code.RegEx, $regexOptions);
-	$compressed = New-Object System.Text.RegularExpressions.Regex($Global:ColorSettings.File.Types.Compressed.RegEx, $regexOptions);
-	$text = New-Object System.Text.RegularExpressions.Regex($Global:ColorSettings.File.Types.Text.RegEx, $regexOptions);
-	$hidden = New-Object System.Text.RegularExpressions.Regex($Global:ColorSettings.File.Types.Hidden.RegEx, $regexOptions);
 
 	if ($file -is [System.IO.DirectoryInfo]) {
 		$currentDirectory = $file.Parent.FullName;
@@ -119,22 +121,24 @@ function Write-File {
 	}
 
 	Write-FileHeader $currentDirectory;
-
-	if ($file.Attributes -band [IO.FileAttributes]::ReparsePoint) {
-		Write-ColorizedFileLine $Global:ColorSettings.File.Types.SymbolicLink.Color $file;
-	} elseif ($hidden.IsMatch($file.Name)) {
-		Write-ColorizedFileLine $Global:ColorSettings.File.Types.Hidden.Color $file;
-	} elseif ($file -is [System.IO.DirectoryInfo]) {
+	$cant_find = @(1);
+	if ($file -is [System.IO.DirectoryInfo]) {
 		Write-ColorizedFileLine $Global:ColorSettings.File.Types.Directory.Color $file;
-	} elseif ($binary.IsMatch($file.Name)) {
-		Write-ColorizedFileLine $Global:ColorSettings.File.Types.Binary.Color $file;
-	} elseif ($code.IsMatch($file.Name)) {
-		Write-ColorizedFileLine $Global:ColorSettings.File.Types.Code.Color $file;
-	} elseif ($compressed.IsMatch($file.Name)) {
-		Write-ColorizedFileLine $Global:ColorSettings.File.Types.Compressed.Color $file;
-	} elseif ($text.IsMatch($file.Name)) {
-		Write-ColorizedFileLine $Global:ColorSettings.File.Types.Text.Color $file;
-	} else {
-		Write-ColorizedFileLine $Global:ColorSettings.File.DefaultColor $file;
+		$cant_find = @(0);
+	}elseif ($file.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+		Write-ColorizedFileLine $Global:ColorSettings.File.Types.SymbolicLink.Color $file;
+		$cant_find = @(0);
+	}else {
+		foreach ($currentItemName in $regex_opj.Keys) {
+			if ($regex_opj[$currentItemName].IsMatch($file.Name)) {
+				Write-ColorizedFileLine $Global:ColorSettings.File.Types[$currentItemName].Color $file;
+				$cant_find = @(0);
+				break;
+			}
+		}
 	}
+	
+	if ($cant_find) {
+			Write-ColorizedFileLine $Global:ColorSettings.File.DefaultColor $file;
+		}
 }
