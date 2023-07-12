@@ -27,8 +27,11 @@ function Write-ServiceHeader {
 	$textColor = $Global:ColorSettings.Service.Header.TextColor;
 	$separatorsColor = $Global:ColorSettings.Service.Header.SeparatorsColor;
 
-	Write-HostColor -Value "Status   Name                         DisplayName" -ForegroundColor $textColor;
-	Write-HostColor -Value "------   ----                         -----------" -ForegroundColor $separatorsColor;
+	$strings = 'Status', (Get-Spaces 3), 'Name', (Get-Spaces 25), 'DisplayName';
+	$titleRow = -join $strings;
+	$separatorRow = Get-SeparatorsForTitles $titleRow;
+	Write-HostColor -Value $titleRow -ForegroundColor $textColor;
+	Write-HostColor -Value $separatorRow -ForegroundColor $separatorsColor;
 
 	$Script:showHeader = $false;
 }
